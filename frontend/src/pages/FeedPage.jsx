@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { MapPin, Calendar, Loader2, AlertTriangle, FileText } from 'lucide-react';
+import { MapPin, Calendar, Loader2, AlertTriangle, FileText, Trash2 } from 'lucide-react';
 
 function FeedPage() {
     const [complaints, setComplaints] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [userId, setUserId] = useState('');
 
     useEffect(() => {
+        let id = localStorage.getItem('civic_anon_id');
+        if (id) {
+            setUserId(id);
+        }
         fetchComplaints();
     }, []);
 
@@ -20,6 +25,15 @@ function FeedPage() {
             setError('Failed to load complaints feed. Is the backend server running?');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDeleteComplaint = async (id) => {
+        try {
+            await axios.delete(`http://localhost:8000/complaint/${id}?user_id=${userId}`);
+            setComplaints(complaints.filter(c => c.id !== id));
+        } catch (err) {
+            console.error('Failed to delete complaint:', err);
         }
     };
 
@@ -75,10 +89,17 @@ function FeedPage() {
                             <div className="card-body" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
                                     <span className={`badge ${c.issue.replace(' ', '-')}`}>{c.issue}</span>
-                                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(255,255,255,0.05)', padding: '0.3rem 0.6rem', borderRadius: '6px' }}>
-                                        <Calendar size={14} />
-                                        {new Date(c.timestamp).toLocaleDateString()}
-                                    </span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(255,255,255,0.05)', padding: '0.3rem 0.6rem', borderRadius: '6px' }}>
+                                            <Calendar size={14} />
+                                            {new Date(c.timestamp).toLocaleDateString()}
+                                        </span>
+                                        {(!c.user_id || c.user_id === userId) && (
+                                            <button onClick={() => handleDeleteComplaint(c.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '0.2rem' }} title="Delete Complaint">
+                                                <Trash2 size={16} />
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <p style={{ marginBottom: '1.5rem', flex: 1, color: 'var(--text-primary)', fontSize: '1.05rem', lineHeight: 1.6 }}>"{c.description}"</p>

@@ -218,6 +218,7 @@ class ComplaintInput(BaseModel):
     latitude: float
     longitude: float
     image: str
+    user_id: Optional[str] = None
 
 @app.post("/complaint")
 async def save_complaint(complaint: ComplaintInput):
@@ -244,3 +245,35 @@ async def get_complaints():
         data = json.load(f)
     data["complaints"].sort(key=lambda x: x["timestamp"], reverse=True)
     return data
+
+@app.delete("/post/{post_id}")
+async def delete_post(post_id: str, user_id: str):
+    with open(POSTS_FILE, "r") as f:
+        data = json.load(f)
+    
+    initial_len = len(data["posts"])
+    data["posts"] = [p for p in data["posts"] if not (p["post_id"] == post_id and p["user_id"] == user_id)]
+    
+    if len(data["posts"]) == initial_len:
+        raise HTTPException(status_code=404, detail="Post not found or unauthorized")
+        
+    with open(POSTS_FILE, "w") as f:
+        json.dump(data, f, indent=4)
+        
+    return {"status": "success", "message": "Post deleted"}
+
+@app.delete("/complaint/{complaint_id}")
+async def delete_complaint(complaint_id: int, user_id: str):
+    with open(JSON_FILE, "r") as f:
+        data = json.load(f)
+        
+    initial_len = len(data["complaints"])
+    data["complaints"] = [c for c in data["complaints"] if not (c.get("id") == complaint_id and (c.get("user_id") == user_id or c.get("user_id") is None))]
+    
+    if len(data["complaints"]) == initial_len:
+        raise HTTPException(status_code=404, detail="Complaint not found or unauthorized")
+        
+    with open(JSON_FILE, "w") as f:
+        json.dump(data, f, indent=4)
+        
+    return {"status": "success", "message": "Complaint deleted"}

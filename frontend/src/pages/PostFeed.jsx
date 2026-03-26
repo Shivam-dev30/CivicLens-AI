@@ -42,6 +42,15 @@ function PostFeed() {
         );
     }
 
+    const handleDeletePost = async (postId) => {
+        try {
+            await axios.delete(`${API_URL}/post/${postId}?user_id=${userId}`);
+            setPosts(posts.filter(p => p.post_id !== postId));
+        } catch (err) {
+            console.error('Failed to delete post:', err);
+        }
+    };
+
     return (
         <div className="animate-fade-in" style={{ maxWidth: '600px', margin: '0 auto', width: '100%' }}>
             <div className="page-header" style={{ marginBottom: '3rem', textAlign: 'center', flexDirection: 'column', alignItems: 'center', display: 'flex', justifyContent: 'center', width: '100%' }}>
@@ -63,7 +72,7 @@ function PostFeed() {
             ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                     {posts.map((post) => (
-                        <PostCard key={post.post_id} post={post} currentUserId={userId} />
+                        <PostCard key={post.post_id} post={post} currentUserId={userId} onDelete={handleDeletePost} />
                     ))}
                 </div>
             )}

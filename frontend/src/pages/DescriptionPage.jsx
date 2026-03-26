@@ -27,24 +27,24 @@ function DescriptionPage({ data, updateData }) {
         setError('');
 
         try {
-            const payload = {
-                issue: data.issue,
-                confidence: data.confidence,
-                description: description,
-                latitude: data.latitude,
-                longitude: data.longitude,
-                image: data.imageUrl.split('/').slice(3).join('/')
-            };
-
-            await axios.post('http://localhost:8000/complaint', payload);
-
-            // 2. Create Social Post
+            // 2. Create Social Post & Add User ID to complaint
             let anonId = localStorage.getItem('civic_anon_id');
             if (!anonId) {
                 anonId = `anon_${Math.random().toString(36).substring(2, 8)}`;
                 localStorage.setItem('civic_anon_id', anonId);
             }
 
+            const payload = {
+                issue: data.issue,
+                confidence: data.confidence,
+                description: description,
+                latitude: data.latitude,
+                longitude: data.longitude,
+                image: data.imageUrl.split('/').slice(3).join('/'),
+                user_id: anonId
+            };
+
+            await axios.post('http://localhost:8000/complaint', payload);
             const postPayload = {
                 user_id: anonId,
                 issue: data.issue,

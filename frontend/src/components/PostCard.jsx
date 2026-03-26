@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, Send, MapPin } from 'lucide-react';
+import { Heart, MessageCircle, Send, MapPin, Trash2 } from 'lucide-react';
 import axios from 'axios';
 
 const API_URL = 'http://localhost:8000';
 
-const PostCard = ({ post, currentUserId }) => {
+const PostCard = ({ post, currentUserId, onDelete }) => {
     const [likes, setLikes] = useState(post.likes || []);
     const [comments, setComments] = useState(post.comments || []);
     const [newComment, setNewComment] = useState('');
@@ -81,6 +81,11 @@ const PostCard = ({ post, currentUserId }) => {
                         <MessageCircle size={26} />
                         <span style={{ fontWeight: '700', fontSize: '1rem' }}>{comments.length}</span>
                     </button>
+                    {post.user_id === currentUserId && (
+                        <button onClick={() => onDelete && onDelete(post.post_id)} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.5rem 0' }} className="hover-scale" title="Delete Post">
+                            <Trash2 size={26} />
+                        </button>
+                    )}
                 </div>
 
                 <div style={{ marginBottom: '1rem' }}>
