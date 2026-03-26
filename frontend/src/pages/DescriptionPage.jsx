@@ -27,6 +27,37 @@ function DescriptionPage({ data, updateData }) {
         setError('');
 
         try {
+            // Duplicate Detection Logic
+            const getDistanceFromLatLonInM = (lat1, lon1, lat2, lon2) => {
+                const R = 6371e3; // metres
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLon = (lon2 - lon1) * Math.PI / 180;
+                const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                return R * c;
+            };
+
+            const postsRes = await axios.get('http://127.0.0.1:8000/posts');
+            const allPosts = postsRes.data.posts || [];
+            
+            const isNearDuplicate = allPosts.some(p => {
+                if (p.issue.toLowerCase() === data.issue.toLowerCase()) {
+                    const dist = getDistanceFromLatLonInM(data.latitude, data.longitude, p.latitude, p.longitude);
+                    return dist < 15; // Within 15 meters
+                }
+                return false;
+            });
+
+            if (isNearDuplicate) {
+                const proceed = window.confirm("⚠️ DUPLICATE SENSOR ALERT!\n\nSomeone recently reported this exact issue within 15 meters of your location.\n\nAre you sure you want to deploy a duplicate official report?");
+                if (!proceed) {
+                    setIsSubmitting(false);
+                    return;
+                }
+            }
+
             // 2. Create Social Post & Add User ID to complaint
             let anonId = localStorage.getItem('civic_anon_id');
             if (!anonId) {
@@ -44,7 +75,7 @@ function DescriptionPage({ data, updateData }) {
                 user_id: anonId
             };
 
-            await axios.post('http://localhost:8000/complaint', payload);
+            await axios.post('http://127.0.0.1:8000/complaint', payload);
             const postPayload = {
                 user_id: anonId,
                 issue: data.issue,
@@ -56,7 +87,7 @@ function DescriptionPage({ data, updateData }) {
                 image: data.imageUrl.split('/').slice(3).join('/')
             };
 
-            await axios.post('http://localhost:8000/create-post', postPayload);
+            await axios.post('http://127.0.0.1:8000/create-post', postPayload);
 
             updateData({ description });
             navigate('/social');

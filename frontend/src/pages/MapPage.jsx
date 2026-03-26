@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
 import { Filter, Download, Zap, MapPin as MapPinIcon, Camera } from 'lucide-react';
+import MarkerClusterGroup from 'react-leaflet-cluster';
 
 // Fix for default Leaflet marker icons in React
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -18,7 +19,7 @@ let DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-const API_URL = 'http://localhost:8000';
+const API_URL = 'http://127.0.0.1:8000';
 
 function MapPage() {
     const [posts, setPosts] = useState([]);
@@ -79,25 +80,27 @@ function MapPage() {
                     />
                     <ZoomControl position="bottomright" />
 
-                    {posts.map((post) => (
-                        <Marker
-                            key={post.post_id}
-                            position={[post.latitude, post.longitude]}
-                        >
-                            <Popup maxWidth={300}>
-                                <div style={{ background: '#1a1d28', color: 'white', padding: '10px', borderRadius: '8px', border: '1px solid #a855f7' }}>
-                                    <h4 style={{ color: '#a855f7', marginBottom: '5px' }}>#{post.issue}</h4>
-                                    <p style={{ fontSize: '0.8rem', marginBottom: '10px' }}>{post.description}</p>
-                                    <img
-                                        src={`${API_URL}/${post.image}`}
-                                        alt={post.issue}
-                                        style={{ width: '100%', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)' }}
-                                    />
-                                    <p style={{ fontSize: '0.7rem', color: '#888', marginTop: '8px' }}>📍 {post.address.split(',').slice(0, 3).join(',')}</p>
-                                </div>
-                            </Popup>
-                        </Marker>
-                    ))}
+                    <MarkerClusterGroup chunkedLoading>
+                        {posts.map((post) => (
+                            <Marker
+                                key={post.post_id}
+                                position={[post.latitude, post.longitude]}
+                            >
+                                <Popup maxWidth={300}>
+                                    <div style={{ background: '#1a1d28', color: 'white', padding: '10px', borderRadius: '8px', border: '1px solid #a855f7' }}>
+                                        <h4 style={{ color: '#a855f7', marginBottom: '5px' }}>#{post.issue}</h4>
+                                        <p style={{ fontSize: '0.8rem', marginBottom: '10px' }}>{post.description}</p>
+                                        <img
+                                            src={`${API_URL}/${post.image}`}
+                                            alt={post.issue}
+                                            style={{ width: '100%', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)' }}
+                                        />
+                                        <p style={{ fontSize: '0.7rem', color: '#888', marginTop: '8px' }}>📍 {post.address.split(',').slice(0, 3).join(',')}</p>
+                                    </div>
+                                </Popup>
+                            </Marker>
+                        ))}
+                    </MarkerClusterGroup>
                 </MapContainer>
 
                 {/* Floating Map Controls & Legend */}

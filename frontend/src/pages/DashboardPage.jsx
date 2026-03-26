@@ -1,6 +1,9 @@
-import React from 'react';
-import { Layers, CheckCircle, AlertTriangle, Users, TrendingUp } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Layers, CheckCircle, AlertTriangle, Users, TrendingUp, Award, Zap, Star } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useAuth } from '../context/AuthContext';
+import { motion } from 'framer-motion';
+import axios from 'axios';
 
 const data = [
     { name: 'Mon', active: 40, resolved: 24 },
@@ -13,48 +16,50 @@ const data = [
 ];
 
 function DashboardPage() {
+    const { user } = useAuth();
+    const [reports, setReports] = useState([]);
+
+    useEffect(() => {
+        axios.get('http://127.0.0.1:8000/complaints')
+            .then(res => {
+                const myReports = (res.data.complaints || []).filter(c => c.user_id === user?.username);
+                setReports(myReports.slice(0, 5));
+            })
+            .catch(console.error);
+    }, [user]);
+
     return (
         <div className="animate-fade-in">
             <div className="page-header" style={{ marginBottom: '3rem' }}>
                 <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
                         <div style={{ padding: '0.4rem 0.8rem', background: 'rgba(168, 85, 247, 0.1)', borderRadius: '2rem', fontSize: '0.7rem', fontWeight: 800, color: '#a855f7', border: '1px solid rgba(168, 85, 247, 0.2)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                            <TrendingUp size={12} /> LIVE UPDATES
+                            <Zap size={12} fill="#a855f7" /> PERSONAL IMPACT SCORE
                         </div>
                     </div>
-                    <h1 className="page-title gradient-text">Command Center</h1>
-                    <p className="page-subtitle">Real-time city analytics and infrastructural health monitor.</p>
+                    <h1 className="page-title gradient-text">Welcome back, {user?.username}</h1>
+                    <p className="page-subtitle">Your local hero dashboard and civic contribution statistics.</p>
                 </div>
             </div>
 
             <div className="dashboard-grid">
-                <div className="card glass-panel stat-card info">
+                <div className="card glass-panel stat-card info" style={{ background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), transparent)' }}>
                     <div className="stat-icon" style={{ color: '#3b82f6' }}>
-                        <Layers size={24} />
+                        <Star size={24} fill="#3b82f6" />
                     </div>
                     <div>
-                        <div className="stat-value">1,204</div>
-                        <div className="stat-label">System Reports</div>
+                        <div className="stat-value">{user?.points || 0}</div>
+                        <div className="stat-label">Civic Points</div>
                     </div>
                 </div>
 
-                <div className="card glass-panel stat-card warning">
-                    <div className="stat-icon" style={{ color: '#f59e0b' }}>
-                        <AlertTriangle size={24} />
-                    </div>
-                    <div>
-                        <div className="stat-value">245</div>
-                        <div className="stat-label">Pending Issues</div>
-                    </div>
-                </div>
-
-                <div className="card glass-panel stat-card success">
+                <div className="card glass-panel stat-card success" style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), transparent)' }}>
                     <div className="stat-icon" style={{ color: '#10b981' }}>
-                        <CheckCircle size={24} />
+                        <Award size={24} />
                     </div>
                     <div>
-                        <div className="stat-value">8,091</div>
-                        <div className="stat-label">Total Resolved</div>
+                        <div className="stat-value">{user?.badges?.length || 0}</div>
+                        <div className="stat-label">Earned Badges</div>
                     </div>
                 </div>
 
@@ -112,6 +117,28 @@ function DashboardPage() {
                                 <Area type="monotone" dataKey="resolved" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorResolved)" dot={{ r: 4, fill: '#10b981', strokeWidth: 2, stroke: '#1a1d28' }} />
                             </AreaChart>
                         </ResponsiveContainer>
+                    </div>
+                </div>
+
+                <div className="card glass-panel" style={{ padding: '2rem' }}>
+                    <h3 style={{ fontSize: '1.25rem', color: '#fff', fontWeight: 700, marginBottom: '2rem' }}>Recent Activity</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        {reports.length === 0 ? (
+                            <p style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '2rem' }}>No recent reports found.</p>
+                        ) : (
+                            reports.map(r => (
+                                <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <img src={`http://127.0.0.1:8000/${r.image}`} style={{ width: '50px', height: '50px', borderRadius: '8px', objectFit: 'cover' }} />
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{r.issue}</div>
+                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{new Date(r.timestamp).toLocaleDateString()}</div>
+                                    </div>
+                                    <div style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem', color: r.status === 'Resolved' ? '#10b981' : '#f59e0b', background: r.status === 'Resolved' ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)', borderRadius: '6px', fontWeight: 800 }}>
+                                        {r.status || 'Pending'}
+                                    </div>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </div>

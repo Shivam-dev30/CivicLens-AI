@@ -2,7 +2,17 @@ import React, { useState } from 'react';
 import { Heart, MessageCircle, Send, MapPin, Trash2 } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = 'http://127.0.0.1:8000';
+
+const getStatusColor = (status) => {
+    switch (status) {
+        case 'Resolved': return '#10b981';
+        case 'In Progress': return '#8b5cf6';
+        case 'Under Review': return '#3b82f6';
+        case 'Duplicate': return '#6b7280';
+        default: return '#f59e0b';
+    }
+};
 
 const PostCard = ({ post, currentUserId, onDelete }) => {
     const [likes, setLikes] = useState(post.likes || []);
@@ -89,7 +99,12 @@ const PostCard = ({ post, currentUserId, onDelete }) => {
                 </div>
 
                 <div style={{ marginBottom: '1rem' }}>
-                    <span className="badge" style={{ marginBottom: '0.5rem', display: 'inline-block' }}>#{post.issue}</span>
+                    <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+                        <span className="badge">#{post.issue}</span>
+                        <span style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem', borderRadius: '20px', fontWeight: 'bold', background: `${getStatusColor(post.status || 'Pending')}20`, color: getStatusColor(post.status || 'Pending'), border: `1px solid ${getStatusColor(post.status || 'Pending')}40` }}>
+                            {post.status || 'Pending'}
+                        </span>
+                    </div>
                     <p style={{ fontSize: '1.05rem', lineHeight: '1.5', color: 'rgba(255,255,255,0.9)' }}>{post.description}</p>
                 </div>
 

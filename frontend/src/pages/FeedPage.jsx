@@ -1,7 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { MapPin, Calendar, Loader2, AlertTriangle, FileText, Trash2 } from 'lucide-react';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import { motion } from 'framer-motion';
 
+const getStatusColor = (status) => {
+    switch (status) {
+        case 'Resolved': return '#10b981';
+        case 'In Progress': return '#8b5cf6';
+        case 'Under Review': return '#3b82f6';
+        case 'Duplicate': return '#6b7280';
+        default: return '#f59e0b'; // Pending
+    }
+};
 function FeedPage() {
     const [complaints, setComplaints] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -18,7 +30,7 @@ function FeedPage() {
 
     const fetchComplaints = async () => {
         try {
-            const res = await axios.get('http://localhost:8000/complaints');
+            const res = await axios.get('http://127.0.0.1:8000/complaints');
             setComplaints(res.data.complaints || []);
         } catch (err) {
             console.error(err);
@@ -30,7 +42,7 @@ function FeedPage() {
 
     const handleDeleteComplaint = async (id) => {
         try {
-            await axios.delete(`http://localhost:8000/complaint/${id}?user_id=${userId}`);
+            await axios.delete(`http://127.0.0.1:8000/complaint/${id}?user_id=${userId}`);
             setComplaints(complaints.filter(c => c.id !== id));
         } catch (err) {
             console.error('Failed to delete complaint:', err);
@@ -39,13 +51,32 @@ function FeedPage() {
 
     if (loading) {
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '6rem', color: 'var(--text-secondary)' }}>
-                <Loader2 className="upload-icon" style={{ animation: 'spin 2s linear infinite' }} />
-                <p style={{ marginTop: '1rem', fontSize: '1.2rem' }}>Loading live feed...</p>
-                <style dangerouslySetInnerHTML={{
-                    __html: `
-          @keyframes spin { 100% { transform: rotate(360deg); } }
-        `}} />
+            <div className="animate-fade-in" style={{ paddingBottom: '4rem' }}>
+                <div className="page-header" style={{ marginBottom: '2rem' }}>
+                    <div>
+                        <h1 className="page-title gradient-text">Live Civic Feed</h1>
+                        <p className="page-subtitle">Real-time stream of citizen-reported infrastructure issues.</p>
+                    </div>
+                </div>
+                <div className="feed-grid">
+                    <SkeletonTheme baseColor="rgba(255,255,255,0.03)" highlightColor="rgba(255,255,255,0.08)">
+                        {[1, 2, 3, 4].map(n => (
+                            <div key={n} className="card glass-panel" style={{ display: 'flex', flexDirection: 'column', padding: 0 }}>
+                                <Skeleton height={240} style={{ borderRadius: '24px 24px 0 0' }} />
+                                <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                                        <Skeleton width={80} height={24} />
+                                        <Skeleton width={100} height={24} />
+                                    </div>
+                                    <Skeleton count={2} style={{ marginBottom: '1.5rem' }} />
+                                    <div style={{ marginTop: 'auto', borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
+                                        <Skeleton width={150} />
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </SkeletonTheme>
+                </div>
             </div>
         );
     }
@@ -77,18 +108,27 @@ function FeedPage() {
                 </div>
             ) : (
                 <div className="feed-grid">
-                    {complaints.map((c) => (
-                        <div key={c.id} className="card glass-panel" style={{ display: 'flex', flexDirection: 'column' }}>
+                    {complaints.map((c, i) => (
+                        <motion.div 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: i * 0.05 }}
+                            key={c.id} className="card glass-panel" style={{ display: 'flex', flexDirection: 'column' }}>
                             <div className="card-img-wrapper" style={{ height: '240px' }}>
                                 <img
-                                    src={`http://localhost:8000/${c.image}`}
+                                    src={`http://127.0.0.1:8000/${c.image}`}
                                     alt={c.issue}
                                     className="card-img"
                                 />
                             </div>
                             <div className="card-body" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                                    <span className={`badge ${c.issue.replace(' ', '-')}`}>{c.issue}</span>
+                                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                        <span className={`badge ${c.issue.replace(' ', '-')}`}>{c.issue}</span>
+                                        <span style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem', borderRadius: '20px', fontWeight: 'bold', background: `${getStatusColor(c.status || 'Pending')}20`, color: getStatusColor(c.status || 'Pending'), border: `1px solid ${getStatusColor(c.status || 'Pending')}40` }}>
+                                            {c.status || 'Pending'}
+                                        </span>
+                                    </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                         <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(255,255,255,0.05)', padding: '0.3rem 0.6rem', borderRadius: '6px' }}>
                                             <Calendar size={14} />
@@ -109,7 +149,7 @@ function FeedPage() {
                                     Lat: {c.latitude?.toFixed(4)}, Lng: {c.longitude?.toFixed(4)}
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
                 </div>
             )}

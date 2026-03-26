@@ -1,0 +1,54 @@
+W:\AI civic\backend\main.py:14: FutureWarning: 
+
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+
+  import google.generativeai as genai
+INFO:     Started server process [17652]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:53921 - "POST /login HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:60053 - "POST /register HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60053 - "POST /login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60053 - "GET /me?token=shivam HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60053 - "GET /complaints HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60053 - "GET /complaints HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64969 - "GET /user/anon_y4u0ub/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64957 - "GET /posts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62267 - "GET /user/anon_y4u0ub/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64957 - "GET /posts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55932 - "GET /uploads/bc51b67a3f1448b685ee73660fabdfc6.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64957 - "GET /complaints HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64957 - "GET /complaints HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64083 - "GET /posts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64083 - "GET /posts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54147 - "GET /complaints HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54147 - "GET /complaints HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51992 - "GET /complaints HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51992 - "GET /complaints HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56681 - "GET /posts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56681 - "GET /posts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56681 - "GET /complaints HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56681 - "GET /complaints HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56681 - "GET /user/anon_y4u0ub/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56435 - "GET /posts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57660 - "GET /user/anon_y4u0ub/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56435 - "GET /posts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56435 - "GET /complaints HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56435 - "GET /complaints HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53866 - "GET /me?token=shivam HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53866 - "GET /me?token=shivam HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53866 - "GET /complaints HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53866 - "GET /complaints HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53866 - "GET /user/anon_y4u0ub/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57833 - "GET /posts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53866 - "GET /user/anon_y4u0ub/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57833 - "GET /posts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57833 - "GET /complaints HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57833 - "GET /complaints HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51257 - "GET /me?token=shivam HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51257 - "GET /me?token=shivam HTTP/1.1" 200 OK

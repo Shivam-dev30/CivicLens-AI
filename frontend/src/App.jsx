@@ -13,12 +13,27 @@ import DashboardPage from './pages/DashboardPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import MapPage from './pages/MapPage';
 import PostFeed from './pages/PostFeed';
+import LoginPage from './pages/LoginPage';
+import UserLoginPage from './pages/UserLoginPage';
+import AdminLoginPage from './pages/AdminLoginPage';
+import RegistrationPage from './pages/RegistrationPage';
+import ContactAdmin from './pages/ContactAdmin';
+import AdminDashboard from './pages/AdminDashboard';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
 function Sidebar() {
+  const { user, logout } = useAuth();
   const location = useLocation();
+
+  const isAuthPage = location.pathname.startsWith('/login') || 
+                     location.pathname === '/register' || 
+                     location.pathname === '/contact-admin';
+
+  if (!user || isAuthPage) return null;
 
   const navItems = [
     { path: '/dashboard', label: 'Overview', icon: <LayoutDashboard size={20} /> },
+    ...(user.role === 'admin' ? [{ path: '/admin', label: 'Command Center', icon: <ShieldAlert size={20} /> }] : []),
     { path: '/', label: 'Report Issue', icon: <Camera size={20} /> },
     { path: '/social', label: 'Community Feed', icon: <Film size={20} /> },
     { path: '/feed', label: 'Live Feed', icon: <List size={20} /> },
@@ -36,7 +51,7 @@ function Sidebar() {
 
       <div className="nav-menu">
         <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '0.75rem', paddingLeft: '1rem', fontWeight: 700 }}>
-          Main Menu
+          {user.role === 'admin' ? 'Admin Panel' : 'Main Menu'}
         </label>
         {navItems.map((item) => (
           <Link
@@ -51,19 +66,39 @@ function Sidebar() {
       </div>
 
       <div className="user-profile-bottom">
-        <div className="avatar">AD</div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>Admin User</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Officer #8022</div>
+        <div className="avatar" style={{ background: user.role === 'admin' ? 'linear-gradient(135deg, #ef4444, #f59e0b)' : 'linear-gradient(135deg, #c084fc, #6366f1)' }}>
+          {user.username.substring(0, 2).toUpperCase()}
         </div>
-        <LogOut size={18} color="var(--text-secondary)" style={{ cursor: 'pointer' }} />
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{user.username}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+            {user.role === 'admin' ? 'Strategic Officer' : `${user.points} Civic Points`}
+          </div>
+        </div>
+        <LogOut size={18} color="var(--text-secondary)" style={{ cursor: 'pointer' }} onClick={logout} />
       </div>
     </aside>
   );
 }
 
+function ProtectedRoute({ children, adminOnly = false }) {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  if (!user) return <LoginPage />;
+  if (adminOnly && user.role !== 'admin') return <DashboardPage />;
+  return children;
+}
+
 function MobileNav() {
+  const { user } = useAuth();
   const location = useLocation();
+  
+  const isAuthPage = location.pathname.startsWith('/login') || 
+                     location.pathname === '/register' || 
+                     location.pathname === '/contact-admin';
+
+  if (!user || isAuthPage) return null;
+
   const navItems = [
     { path: '/dashboard', label: 'Home', icon: <LayoutDashboard size={24} /> },
     { path: '/social', label: 'Feed', icon: <Film size={24} /> },
@@ -128,27 +163,62 @@ function App() {
   };
 
   return (
-    <Router>
+    <AuthProvider>
+      <Router>
+        <AppContent 
+           complaintData={complaintData} 
+           updateData={updateComplaintData} 
+        />
+      </Router>
+    </AuthProvider>
+  );
+}
+
+function AppContent({ complaintData, updateData }) {
+  return (
+    <Routes>
+      {/* Auth Routes - No Sidebar */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/login/user" element={<UserLoginPage />} />
+      <Route path="/login/admin" element={<AdminLoginPage />} />
+      <Route path="/register" element={<RegistrationPage />} />
+      <Route path="/contact-admin" element={<ContactAdmin />} />
+
+      {/* Main App Routes - Wrapped in AppLayout with Sidebar */}
+      <Route path="/*" element={
+        <ProtectedRoute>
+          <AppLayout>
+            <Routes>
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/" element={<HomePage updateData={updateData} />} />
+              <Route path="/detect" element={<DetectionPage data={complaintData} updateData={updateData} />} />
+              <Route path="/describe" element={<DescriptionPage data={complaintData} updateData={updateData} />} />
+              <Route path="/feed" element={<FeedPage />} />
+              <Route path="/map" element={<MapPage />} />
+              <Route path="/social" element={<PostFeed />} />
+              <Route path="/analytics" element={<AnalyticsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/admin" element={<ProtectedRoute adminOnly={true}><AdminDashboard /></ProtectedRoute>} />
+            </Routes>
+          </AppLayout>
+        </ProtectedRoute>
+      } />
+    </Routes>
+  );
+}
+
+function AppLayout({ children }) {
+  return (
+    <div className="app-container">
       <div className="mesh-bg"></div>
-      <div className="app-container">
-        <Sidebar />
-        <main className="main-content">
-          <Routes>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/" element={<HomePage updateData={updateComplaintData} />} />
-            <Route path="/detect" element={<DetectionPage data={complaintData} updateData={updateComplaintData} />} />
-            <Route path="/describe" element={<DescriptionPage data={complaintData} updateData={updateComplaintData} />} />
-            <Route path="/feed" element={<FeedPage />} />
-            <Route path="/map" element={<MapPage />} />
-            <Route path="/social" element={<PostFeed />} />
-            <Route path="/analytics" element={<AnalyticsPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-          </Routes>
-        </main>
-        <MobileNav />
-      </div>
-    </Router>
+      <Sidebar />
+      <main className="main-content">
+        {children}
+      </main>
+      <MobileNav />
+    </div>
   );
 }
 
 export default App;
+

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Camera, Loader2, MapPin, X, Aperture, ShieldCheck } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = 'http://127.0.0.1:8000';
 
 const applyWatermark = async (file, lat, lng, addressData) => {
     return new Promise((resolve) => {
