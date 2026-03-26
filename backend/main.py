@@ -361,9 +361,9 @@ async def update_complaint_status(complaint_id: int, payload: StatusUpdate):
             old_status = c.get("status", "Pending")
             c["status"] = payload.status
             
-            # Gamification: Award 50 points when report is resolved
+            # Gamification: Award 20 points when report is resolved
             if payload.status == "Resolved" and old_status != "Resolved":
-                award_points(c.get("user_id"), 50)
+                award_points(c.get("user_id"), 20)
                 
             break
             
@@ -382,9 +382,9 @@ async def update_post_status(post_id: str, payload: StatusUpdate):
             old_status = p.get("status", "Pending")
             p["status"] = payload.status
             
-            # Gamification: Award 50 points
+            # Gamification: Award 20 points
             if payload.status == "Resolved" and old_status != "Resolved":
-                award_points(p.get("user_id"), 50)
+                award_points(p.get("user_id"), 20)
                 
             break
             
@@ -430,3 +430,30 @@ async def delete_complaint(complaint_id: int, user_id: str):
         json.dump(data, f, indent=4)
         
     return {"status": "success", "message": "Complaint deleted"}
+
+class RedeemInput(BaseModel):
+    user_id: str
+    points: int
+    item: str
+
+@app.post("/redeem")
+async def redeem_points(payload: RedeemInput):
+    with open(USERS_FILE, "r") as f:
+        data = json.load(f)
+    
+    user = data["users"].get(payload.user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    if user["points"] < payload.points:
+        raise HTTPException(status_code=400, detail="Insufficient points")
+        
+    if user["points"] < 100:
+        raise HTTPException(status_code=400, detail="Minimum 100 points required to redeem")
+        
+    user["points"] -= payload.points
+    
+    with open(USERS_FILE, "w") as f:
+        json.dump(data, f, indent=4)
+        
+    return {"status": "success", "message": f"Successfully redeemed {payload.item}", "new_balance": user["points"]}

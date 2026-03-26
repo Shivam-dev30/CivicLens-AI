@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import {
   ShieldAlert, LayoutDashboard, Camera, List,
-  Map as MapIcon, Settings, BarChart3, User, LogOut, Film, Target, Zap
+  Map as MapIcon, Settings, BarChart3, User, LogOut, Film, Target, Zap, ShoppingBag
 } from 'lucide-react';
 
 import HomePage from './pages/HomePage';
@@ -19,6 +19,7 @@ import AdminLoginPage from './pages/AdminLoginPage';
 import RegistrationPage from './pages/RegistrationPage';
 import ContactAdmin from './pages/ContactAdmin';
 import AdminDashboard from './pages/AdminDashboard';
+import ShopPage from './pages/ShopPage';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 function Sidebar() {
@@ -42,7 +43,8 @@ function Sidebar() {
         : [
             { path: '/', label: 'Report Issue', icon: <Camera size={20} /> },
             { path: '/social', label: 'Community Feed', icon: <Film size={20} /> },
-            { path: '/feed', label: 'Live Feed', icon: <List size={20} /> }
+            { path: '/feed', label: 'Live Feed', icon: <List size={20} /> },
+            { path: '/shop', label: 'Civic Store', icon: <ShoppingBag size={20} /> }
           ]
     ),
     { path: '/map', label: 'Strategic Map', icon: <MapIcon size={20} /> },
@@ -117,7 +119,7 @@ function MobileNav() {
     { path: '/dashboard', label: 'Home', icon: <LayoutDashboard size={24} /> },
     { path: '/social', label: 'Feed', icon: <Film size={24} /> },
     { path: '/', label: 'Report', icon: <Camera size={24} /> },
-    { path: '/feed', label: 'Live', icon: <List size={24} /> },
+    { path: '/shop', label: 'Shop', icon: <ShoppingBag size={24} /> },
     { path: '/map', label: 'Map', icon: <MapIcon size={24} /> },
   ];
 
@@ -256,6 +258,7 @@ function AppContent({ complaintData, updateData }) {
               <Route path="/social" element={<PostFeed />} />
               <Route path="/analytics" element={<AnalyticsPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/shop" element={<ShopPage />} />
               <Route path="/admin" element={<ProtectedRoute adminOnly={true}><AdminDashboard /></ProtectedRoute>} />
               <Route path="/verification" element={<ProtectedRoute adminOnly={true}><AIVerificationPage /></ProtectedRoute>} />
               <Route path="/emergency" element={<ProtectedRoute adminOnly={true}><EmergencyOverridePage /></ProtectedRoute>} />
