@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, Lock, ArrowLeft, Terminal, ShieldAlert, Fingerprint } from 'lucide-react';
+import { ShieldCheck, Lock, ArrowLeft, Terminal, ShieldAlert, Fingerprint, ChevronRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 function AdminLoginPage() {
@@ -32,80 +32,88 @@ function AdminLoginPage() {
   };
 
   return (
-    <div style={{ height: '100vh', display: 'flex', background: '#05070a', color: 'white' }}>
+    <div className="auth-container">
       {/* Brand Side - Visual Side */}
-      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '4rem' }}>
-         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.15 }}>
+      <div className="auth-brand-side">
+         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.35 }}>
             <img src="/assets/login_bg.png" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Background" />
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(to bottom, transparent, #05070a)' }}></div>
          </div>
          
-         <Link to="/login" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem', marginBottom: 'auto', zIndex: 10 }}>
+         <Link to="/login" className="auth-link" style={{ position: 'relative', zIndex: 10, display: 'flex', alignItems: 'center', gap: '0.6rem', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem', marginBottom: 'auto' }}>
             <ArrowLeft size={18} /> BACK TO GATEWAY
          </Link>
 
          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
             style={{ position: 'relative', zIndex: 10 }}
          >
-            <div style={{ display: 'inline-flex', padding: '0.5rem 1rem', background: 'rgba(192, 132, 252, 0.1)', border: '1px solid rgba(192, 132, 252, 0.2)', borderRadius: '20px', color: '#c084fc', fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.12em', marginBottom: '2rem' }}>
-                <Terminal size={14} style={{ marginRight: '0.5rem' }} /> SECURE ENCLAVE 01
+            <div style={{ display: 'inline-flex', padding: '0.6rem 1.25rem', background: 'rgba(192, 132, 252, 0.15)', backdropFilter: 'blur(10px)', border: '1px solid rgba(192, 132, 252, 0.2)', borderRadius: '24px', color: '#c084fc', fontSize: '0.8rem', fontWeight: 800, letterSpacing: '0.12em', marginBottom: '2.5rem' }}>
+                <Terminal size={14} style={{ marginRight: '0.6rem' }} /> SECURE ENCLAVE 01
             </div>
-            <h1 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '1.5rem' }}>Officer <br /> Terminal</h1>
-            <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.5)', maxWidth: '400px', lineHeight: 1.6 }}>
-                Strategic management interface for municipal officials. Unauthorized access is monitored & strictly prohibited.
+            <h1 style={{ fontSize: '4.5rem', fontWeight: 900, marginBottom: '1.5rem', lineHeight: 1, letterSpacing: '-0.02em' }}>
+              Officer <br /> <span style={{ color: '#c084fc' }}>Terminal</span>
+            </h1>
+            <p style={{ fontSize: '1.25rem', color: 'rgba(255,255,255,0.5)', maxWidth: '440px', lineHeight: 1.6, fontWeight: 500 }}>
+                Strategic management interface for municipal officials. Access to this sector is strictly monitored and logged.
             </p>
          </motion.div>
 
-         <div style={{ marginTop: 'auto', display: 'flex', gap: '1rem', color: 'rgba(255,255,255,0.3)', fontSize: '0.75rem', zIndex: 10 }}>
-            <span>TRUSTED SYSTEM</span>
-            <span>PROTECTED ENCRYPT</span>
+         <div style={{ marginTop: 'auto', display: 'flex', gap: '1.5rem', color: 'rgba(255,255,255,0.3)', fontSize: '0.75rem', zIndex: 10, fontWeight: 700, letterSpacing: '0.1em' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}><ShieldAlert size={14} /> TRUSTED SYSTEM</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}><Fingerprint size={14} /> PROTECTED ENCRYPT</span>
          </div>
       </div>
 
       {/* Form Side */}
-      <div style={{ flex: 0.8, background: '#080a0f', borderLeft: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '3rem' }}>
-         <div style={{ width: '100%', maxWidth: '400px' }}>
-            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-                <div style={{ width: '72px', height: '72px', background: 'rgba(192, 132, 252, 0.1)', borderRadius: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', color: '#c084fc', border: '1px solid rgba(192, 132, 252, 0.2)' }}>
-                    <ShieldCheck size={36} />
+      <div className="auth-form-side">
+         <div className="auth-card">
+            <motion.div 
+               initial={{ opacity: 0, y: 20 }}
+               animate={{ opacity: 1, y: 0 }}
+               transition={{ delay: 0.2 }}
+               style={{ textAlign: 'center', marginBottom: '3.5rem' }}
+            >
+                <div style={{ width: '80px', height: '80px', background: 'rgba(192, 132, 252, 0.1)', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem', color: '#c084fc', border: '1px solid rgba(192, 132, 252, 0.2)' }}>
+                    <ShieldCheck size={40} />
                 </div>
-                <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Authorize Entry</h2>
-                <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem', marginTop: '0.5rem' }}>Input official credentials below</p>
-            </div>
+                <h2 style={{ fontSize: '2.5rem', fontWeight: 900, letterSpacing: '-0.02em' }}>Authorize Entry</h2>
+                <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.1rem', marginTop: '0.75rem', fontWeight: 500 }}>Operational credential verification required</p>
+            </motion.div>
 
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                <div className="form-group">
-                    <label style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', marginBottom: '0.6rem', display: 'block' }}>OFFICIAL IDENTIFIER</label>
-                    <div style={{ position: 'relative' }}>
-                        <Fingerprint size={18} style={{ position: 'absolute', left: '1.25rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }} />
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+                <div className="auth-input-group">
+                    <label className="auth-label">Official Identifier</label>
+                    <div className="auth-input-wrapper">
+                        <Fingerprint className="auth-icon" size={22} style={{ color: '#c084fc' }} />
                         <input 
                             type="text" 
-                            className="form-control"
+                            className="auth-input"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            placeholder="e.g. admin"
+                            placeholder="Enter official ID"
                             required
-                            style={{ paddingLeft: '3.5rem', height: '56px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.1)' }}
+                            style={{ borderFocusColor: '#c084fc' }}
                         />
                     </div>
                 </div>
 
-                <div className="form-group" style={{ marginBottom: '1rem' }}>
-                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
-                        <label style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em' }}>SECURITY PASSCODE</label>
-                        <Link to="/contact-admin" style={{ fontSize: '0.75rem', color: '#c084fc', fontWeight: 600, textDecoration: 'none' }}>Forgot?</Link>
+                <div className="auth-input-group">
+                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                        <label className="auth-label" style={{ marginBottom: 0 }}>Security Passcode</label>
+                        <Link to="/contact-admin" className="auth-link" style={{ fontSize: '0.8rem', color: '#c084fc', opacity: 0.6 }}>Reset Protocol?</Link>
                    </div>
-                    <div style={{ position: 'relative' }}>
-                        <Lock size={18} style={{ position: 'absolute', left: '1.25rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }} />
+                    <div className="auth-input-wrapper">
+                        <Lock className="auth-icon" size={22} style={{ color: '#c084fc' }} />
                         <input 
                             type="password" 
-                            className="form-control"
+                            className="auth-input"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="••••••••"
                             required
-                            style={{ paddingLeft: '3.5rem', height: '56px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.1)' }}
                         />
                     </div>
                 </div>
@@ -115,25 +123,35 @@ function AdminLoginPage() {
                         <motion.div 
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            style={{ color: '#f87171', fontSize: '0.85rem', fontWeight: 600, background: 'rgba(248,113,113,0.1)', padding: '1rem', borderRadius: '12px', textAlign: 'center', border: '1px solid rgba(248,113,113,0.2)' }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            style={{ 
+                              color: '#f87171', 
+                              fontSize: '0.9rem', 
+                              fontWeight: 600, 
+                              background: 'rgba(248,113,113,0.08)', 
+                              border: '1px solid rgba(248,113,113,0.15)',
+                              padding: '1.25rem', 
+                              borderRadius: '16px', 
+                              textAlign: 'center' 
+                            }}
                         >
-                            <ShieldAlert size={16} style={{ verticalAlign: 'middle', marginRight: '0.5rem' }} /> {error}
+                            <ShieldAlert size={18} style={{ verticalAlign: 'middle', marginRight: '0.6rem' }} /> {error}
                         </motion.div>
                     )}
                 </AnimatePresence>
 
                 <button 
                     type="submit" 
-                    className="btn btn-primary" 
+                    className="auth-btn" 
                     disabled={isLoading} 
-                    style={{ height: '56px', background: 'linear-gradient(135deg, #c084fc, #8b5cf6)', border: 'none', fontWeight: 800, fontSize: '0.9rem', letterSpacing: '0.05em', marginTop: '1rem' }}
+                    style={{ background: 'linear-gradient(135deg, #c084fc, #8b5cf6)', boxShadow: '0 10px 25px -5px rgba(192, 132, 252, 0.3)' }}
                 >
-                    {isLoading ? 'PROTOCOL VERIFICATION...' : 'ACCESS TERMINAL'}
+                    {isLoading ? 'PROTOCOL VERIFICATION...' : <>ACCESS TERMINAL <ChevronRight size={20} /></>}
                 </button>
             </form>
 
-            <p style={{ marginTop: '2.5rem', textAlign: 'center', fontSize: '0.85rem', color: 'rgba(255,255,255,0.3)' }}>
-                System under monitoring by CivicLens High-Level API.
+            <p style={{ marginTop: '3.5rem', textAlign: 'center', fontSize: '0.85rem', color: 'rgba(255,255,255,0.25)', fontWeight: 600, letterSpacing: '0.05em' }}>
+                REAL-TIME SECURITY MONITORING ACTIVE
             </p>
          </div>
       </div>
