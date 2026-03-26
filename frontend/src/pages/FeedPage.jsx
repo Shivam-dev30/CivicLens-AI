@@ -110,43 +110,78 @@ function FeedPage() {
                 <div className="feed-grid">
                     {complaints.map((c, i) => (
                         <motion.div 
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.05 }}
-                            key={c.id} className="card glass-panel" style={{ display: 'flex', flexDirection: 'column' }}>
-                            <div className="card-img-wrapper" style={{ height: '240px' }}>
+                            transition={{ duration: 0.5, delay: i * 0.1 }}
+                            key={c.id} 
+                            className="card glass-panel" 
+                            style={{ display: 'flex', flexDirection: 'column', padding: 0 }}
+                        >
+                            <div className="card-img-wrapper">
                                 <img
                                     src={`http://127.0.0.1:8000/${c.image}`}
                                     alt={c.issue}
                                     className="card-img"
                                 />
+                                <div style={{ position: 'absolute', top: '1.25rem', right: '1.25rem', display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                                    <span 
+                                        style={{ 
+                                            fontSize: '0.7rem', 
+                                            padding: '0.4rem 0.8rem', 
+                                            borderRadius: '50px', 
+                                            fontWeight: 800, 
+                                            background: 'rgba(0,0,0,0.6)', 
+                                            backdropFilter: 'blur(10px)',
+                                            color: '#fff',
+                                            border: '1px solid rgba(255,255,255,0.1)'
+                                        }}
+                                    >
+                                        ID: #{c.id}
+                                    </span>
+                                </div>
+                                <div style={{ position: 'absolute', bottom: '1.25rem', left: '1.25rem', display: 'flex', gap: '0.6rem' }}>
+                                    <span className={`badge ${c.issue.toLowerCase().replace(/\s+/g, '-')}`}>{c.issue}</span>
+                                </div>
                             </div>
-                            <div className="card-body" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                                        <span className={`badge ${c.issue.replace(' ', '-')}`}>{c.issue}</span>
-                                        <span style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem', borderRadius: '20px', fontWeight: 'bold', background: `${getStatusColor(c.status || 'Pending')}20`, color: getStatusColor(c.status || 'Pending'), border: `1px solid ${getStatusColor(c.status || 'Pending')}40` }}>
-                                            {c.status || 'Pending'}
-                                        </span>
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(255,255,255,0.05)', padding: '0.3rem 0.6rem', borderRadius: '6px' }}>
-                                            <Calendar size={14} />
-                                            {new Date(c.timestamp).toLocaleDateString()}
-                                        </span>
-                                        {(!c.user_id || c.user_id === userId) && (
-                                            <button onClick={() => handleDeleteComplaint(c.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '0.2rem' }} title="Delete Complaint">
-                                                <Trash2 size={16} />
-                                            </button>
-                                        )}
+                            
+                            <div className="card-body" style={{ padding: '1.75rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                                    <span style={{ fontSize: '0.75rem', padding: '0.4rem 0.8rem', borderRadius: '50px', fontWeight: 800, color: getStatusColor(c.status || 'Pending'), background: `${getStatusColor(c.status || 'Pending')}15`, border: `1px solid ${getStatusColor(c.status || 'Pending')}30` }}>
+                                        {c.status?.toUpperCase() || 'PENDING'}
+                                    </span>
+                                    <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}>
+                                        <Calendar size={14} />
+                                        {new Date(c.timestamp).toLocaleDateString()}
+                                    </span>
+                                </div>
+
+                                <p style={{ marginBottom: '1.5rem', flex: 1, color: '#fff', fontSize: '1.05rem', lineHeight: 1.6, fontWeight: 500 }}>"{c.description}"</p>
+
+                                <div style={{ marginBottom: '1.5rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', lineHeight: 1.4 }}>
+                                        <MapPin size={18} style={{ color: 'var(--primary)', marginTop: '0.1rem' }} />
+                                        <div>
+                                            <div style={{ fontWeight: 700, color: '#fff', marginBottom: '0.2rem' }}>Reported Location</div>
+                                            <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>{c.address || 'Location data available in coordinates.'}</div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <p style={{ marginBottom: '1.5rem', flex: 1, color: 'var(--text-primary)', fontSize: '1.05rem', lineHeight: 1.6 }}>"{c.description}"</p>
-
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem', borderTop: '1px dashed var(--glass-border)', paddingTop: '1.25rem', marginTop: 'auto' }}>
-                                    <MapPin size={16} color="hsl(var(--primary))" />
-                                    Lat: {c.latitude?.toFixed(4)}, Lng: {c.longitude?.toFixed(4)}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1.25rem', marginTop: 'auto' }}>
+                                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.05em' }}>
+                                        LAT: {c.latitude?.toFixed(6)} / LNG: {c.longitude?.toFixed(6)}
+                                    </div>
+                                    
+                                    {(!c.user_id || c.user_id === userId) && (
+                                        <button 
+                                            onClick={() => handleDeleteComplaint(c.id)} 
+                                            className="hover-scale"
+                                            style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', color: '#ef4444', cursor: 'pointer', padding: '0.5rem', borderRadius: '8px', transition: 'all 0.2s' }} 
+                                            title="Delete Complaint"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </motion.div>

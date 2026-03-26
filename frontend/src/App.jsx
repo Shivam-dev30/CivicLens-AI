@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import {
   ShieldAlert, LayoutDashboard, Camera, List,
-  Map as MapIcon, Settings, BarChart3, User, LogOut, Film
+  Map as MapIcon, Settings, BarChart3, User, LogOut, Film, Target, Zap
 } from 'lucide-react';
 
 import HomePage from './pages/HomePage';
@@ -33,13 +33,21 @@ function Sidebar() {
 
   const navItems = [
     { path: '/dashboard', label: 'Overview', icon: <LayoutDashboard size={20} /> },
-    ...(user.role === 'admin' ? [{ path: '/admin', label: 'Command Center', icon: <ShieldAlert size={20} /> }] : []),
-    { path: '/', label: 'Report Issue', icon: <Camera size={20} /> },
-    { path: '/social', label: 'Community Feed', icon: <Film size={20} /> },
-    { path: '/feed', label: 'Live Feed', icon: <List size={20} /> },
-    { path: '/map', label: 'City Map', icon: <MapIcon size={20} /> },
-    { path: '/analytics', label: 'Analytics', icon: <BarChart3 size={20} /> },
-    { path: '/settings', label: 'Settings', icon: <Settings size={20} /> },
+    ...(user.role === 'admin' 
+        ? [
+            { path: '/admin', label: 'Operational Hub', icon: <ShieldAlert size={20} /> },
+            { path: '/verification', label: 'AI Verification', icon: <Target size={20} /> },
+            { path: '/emergency', label: 'Priority Override', icon: <Zap size={20} /> }
+          ] 
+        : [
+            { path: '/', label: 'Report Issue', icon: <Camera size={20} /> },
+            { path: '/social', label: 'Community Feed', icon: <Film size={20} /> },
+            { path: '/feed', label: 'Live Feed', icon: <List size={20} /> }
+          ]
+    ),
+    { path: '/map', label: 'Strategic Map', icon: <MapIcon size={20} /> },
+    { path: '/analytics', label: 'City Insights', icon: <BarChart3 size={20} /> },
+    { path: '/settings', label: 'Security Panel', icon: <Settings size={20} /> },
   ];
 
   return (
@@ -99,11 +107,17 @@ function MobileNav() {
 
   if (!user || isAuthPage) return null;
 
-  const navItems = [
+  const navItems = user.role === 'admin' ? [
+    { path: '/dashboard', label: 'Home', icon: <LayoutDashboard size={24} /> },
+    { path: '/admin', label: 'Hub', icon: <ShieldAlert size={24} /> },
+    { path: '/verification', label: 'AI', icon: <Target size={24} /> },
+    { path: '/emergency', label: 'Alert', icon: <Zap size={24} /> },
+    { path: '/settings', label: 'Config', icon: <Settings size={24} /> },
+  ] : [
     { path: '/dashboard', label: 'Home', icon: <LayoutDashboard size={24} /> },
     { path: '/social', label: 'Feed', icon: <Film size={24} /> },
     { path: '/', label: 'Report', icon: <Camera size={24} /> },
-    { path: '/feed', label: 'Stats', icon: <List size={24} /> },
+    { path: '/feed', label: 'Live', icon: <List size={24} /> },
     { path: '/map', label: 'Map', icon: <MapIcon size={24} /> },
   ];
 
@@ -140,6 +154,50 @@ function SettingsPage() {
         <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Configuration Restricted</h2>
         <p style={{ color: 'var(--text-secondary)', maxWidth: '400px', margin: '0 auto' }}>
           Local admin privileges are required to modify system-level parameters and AI thresholding.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function AIVerificationPage() {
+  return (
+    <div className="animate-up">
+      <div className="page-header">
+        <div>
+          <h1 className="page-title gradient-text">AI Verification Terminal</h1>
+          <p className="page-subtitle">Human-in-the-Loop review for low-confidence infrastructure anomalies.</p>
+        </div>
+      </div>
+      <div className="card glass-panel card-body" style={{ textAlign: 'center', padding: '6rem 2rem' }}>
+        <div style={{ width: '80px', height: '80px', borderRadius: '24px', background: 'rgba(16, 185, 129, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem' }}>
+          <Target size={40} style={{ color: '#10b981' }} />
+        </div>
+        <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Zero Low-Confidence Flags</h2>
+        <p style={{ color: 'var(--text-secondary)', maxWidth: '450px', margin: '0 auto' }}>
+          Model performing within nominal parameters. No incidents currently require manual verification from the "Human Oversight" protocol.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function EmergencyOverridePage() {
+  return (
+    <div className="animate-up">
+      <div className="page-header">
+        <div>
+          <h1 className="page-title gradient-text">Priority Override</h1>
+          <p className="page-subtitle">Immediate tactical escalation for critical municipal failures.</p>
+        </div>
+      </div>
+      <div className="card glass-panel card-body" style={{ textAlign: 'center', padding: '6rem 2rem', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+        <div style={{ width: '80px', height: '80px', borderRadius: '24px', background: 'rgba(239, 68, 68, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem' }}>
+          <Zap size={40} style={{ color: '#ef4444' }} />
+        </div>
+        <h2 style={{ fontSize: '2rem', marginBottom: '1rem', color: '#ef4444' }}>No Active Emergencies</h2>
+        <p style={{ color: 'var(--text-secondary)', maxWidth: '450px', margin: '0 auto' }}>
+          Strategic sectors are reporting operational stability. The emergency override system is currently in "Standby Mode."
         </p>
       </div>
     </div>
@@ -199,6 +257,8 @@ function AppContent({ complaintData, updateData }) {
               <Route path="/analytics" element={<AnalyticsPage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/admin" element={<ProtectedRoute adminOnly={true}><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/verification" element={<ProtectedRoute adminOnly={true}><AIVerificationPage /></ProtectedRoute>} />
+              <Route path="/emergency" element={<ProtectedRoute adminOnly={true}><EmergencyOverridePage /></ProtectedRoute>} />
             </Routes>
           </AppLayout>
         </ProtectedRoute>

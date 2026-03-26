@@ -16,18 +16,19 @@ const applyWatermark = async (file, lat, lng, addressData) => {
             ctx.drawImage(img, 0, 0);
 
             const scale = Math.max(img.width / 1500, 1);
-
             const padding = 20 * scale;
-            const boxWidth = img.width - (padding * 2);
-            const boxHeight = 250 * scale;
+            
+            // Much smaller, compact box
+            const boxWidth = 520 * scale;
+            const boxHeight = 160 * scale;
 
             const x = padding;
             const y = img.height - boxHeight - padding;
 
-            // Draw background box
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            // Draw background box (glassmorphic style)
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
             ctx.beginPath();
-            const r = 15 * scale;
+            const r = 12 * scale;
             ctx.moveTo(x + r, y);
             ctx.lineTo(x + boxWidth - r, y);
             ctx.quadraticCurveTo(x + boxWidth, y, x + boxWidth, y + r);
@@ -40,45 +41,50 @@ const applyWatermark = async (file, lat, lng, addressData) => {
             ctx.closePath();
             ctx.fill();
 
+            // Draw Subtle Border
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 1 * scale;
+            ctx.stroke();
+
             // Draw Text
             ctx.textAlign = 'left';
             ctx.fillStyle = '#ffffff';
 
-            let currentY = y + padding * 2.5;
-            let textStartX = x + padding * 2;
+            let currentY = y + 30 * scale;
+            let textStartX = x + 25 * scale;
 
             // Map Icon / Header
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-            ctx.font = `normal ${20 * scale}px sans-serif`;
-            ctx.fillText('📍 CivicLens AI Geotag', textStartX, currentY);
+            ctx.fillStyle = 'rgba(192, 132, 252, 0.9)'; // Primary color
+            ctx.font = `bold ${14 * scale}px sans-serif`;
+            ctx.fillText('📍 CIVICLENS AI GEOTAG', textStartX, currentY);
 
-            currentY += 45 * scale;
+            currentY += 28 * scale;
             ctx.fillStyle = '#ffffff';
 
             // Title (City, State)
-            ctx.font = `bold ${32 * scale}px sans-serif`;
-            const title = addressData.display_name ? addressData.display_name.split(',').slice(0, 3).join(', ') : (lat ? 'Location Captured' : 'Location Unavailable');
+            ctx.font = `bold ${18 * scale}px sans-serif`;
+            const title = addressData.display_name ? addressData.display_name.split(',').slice(0, 2).join(', ') : (lat ? 'Location Captured' : 'Location Unavailable');
             ctx.fillText(title, textStartX, currentY);
 
-            currentY += 35 * scale;
-            // Detailed Address
-            ctx.font = `normal ${22 * scale}px sans-serif`;
-            const addressText = addressData.display_name || 'Address details not found.';
-            ctx.fillText(addressText.substring(0, 80) + (addressText.length > 80 ? '...' : ''), textStartX, currentY);
+            currentY += 22 * scale;
+            // Detailed Address (Small)
+            ctx.font = `normal ${13 * scale}px sans-serif`;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            const addressText = addressData.display_name || 'Address details missing.';
+            ctx.fillText(addressText.substring(0, 65) + (addressText.length > 65 ? '...' : ''), textStartX, currentY);
 
-            currentY += 35 * scale;
-            // Lat
-            ctx.font = `bold ${24 * scale}px sans-serif`;
-            ctx.fillText(`Lat ${lat ? lat.toFixed(6) + '°' : 'N/A'}`, textStartX, currentY);
+            currentY += 28 * scale;
+            // Lat/Lng
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${14 * scale}px sans-serif`;
+            ctx.fillText(`GPS: ${lat?.toFixed(6)}, ${lng?.toFixed(6)}`, textStartX, currentY);
 
-            currentY += 30 * scale;
-            // Lng
-            ctx.fillText(`Long ${lng ? lng.toFixed(6) + '°' : 'N/A'}`, textStartX, currentY);
-
-            currentY += 35 * scale;
+            currentY += 22 * scale;
             // Date
+            ctx.font = `normal ${12 * scale}px sans-serif`;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
             const dateObj = new Date();
-            const dateStr = dateObj.toLocaleDateString('en-GB') + ' ' + dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) + ' GMT ' + (dateObj.toString().match(/([-\+][0-9]{4})/) || [''])[0];
+            const dateStr = dateObj.toLocaleDateString('en-GB') + ' ' + dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
             ctx.fillText(dateStr, textStartX, currentY);
 
             canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.95);
